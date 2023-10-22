@@ -38,6 +38,8 @@ root = tree.getroot()
 
 print(f"\nInserting the data from file '{xml_filename}' to database table 'car_data'")
 
+check_query = "SELECT COUNT(*) FROM car_data WHERE uid = ? AND car_vin = ? AND car_company = ? AND car_model = ? AND car_model_year = ? AND car_color = ?"
+
 for item in root.findall('item'):
     uid = item.find('uid').text
     car_vin = item.find('car_vin').text
@@ -46,10 +48,14 @@ for item in root.findall('item'):
     car_model_year = item.find('car_model_year').text
     car_color = item.find('car_color').text
 
-    insert_query = "INSERT INTO car_data (uid, car_vin, car_company, car_model, car_model_year, car_color) VALUES (?, ?, ?, ?, ?, ?)"
-    values = (uid, car_vin, car_company, car_model, car_model_year, car_color)
-    
-    db_cursor.execute(insert_query, values)
+    db_cursor.execute(check_query, (uid, car_vin, car_company, car_model, car_model_year, car_color))
+    exists = db_cursor.fetchone()[0]
+
+    if exists == 0:
+        insert_query = "INSERT INTO car_data (uid, car_vin, car_company, car_model, car_model_year, car_color) VALUES (?, ?, ?, ?, ?, ?)"
+        values = (uid, car_vin, car_company, car_model, car_model_year, car_color)
+        
+        db_cursor.execute(insert_query, values)
 
 db_connection.commit()
 
