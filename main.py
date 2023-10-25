@@ -64,6 +64,15 @@ def xml_sql(file_xml, file_db):
 
     print("\nData has been sucessfully inserted into table data")
 
+def format_data(results):
+    formatted_results = []
+    
+    for row in results:
+        formatted_row = f"'ID': {row[0]}\n'VIN': {row[1]}\n'Company': {row[2]} - 'Model': {row[3]}\n'Year': {row[4]} - 'Color': {row[5]}\n"
+        formatted_results.append(formatted_row)
+    
+    return formatted_results
+
 # Funções para seleção na base de dados
 def select_company(company_name):
     db_connection = sqlite3.connect('database.db')
@@ -72,7 +81,9 @@ def select_company(company_name):
     results = cursor.fetchall()
     cursor.close()
     db_connection.close()
-    return results
+    
+    formatted_results = format_data(results)
+    return formatted_results
 
 def select_model(model_name):
     db_connection = sqlite3.connect('database.db')
@@ -81,7 +92,9 @@ def select_model(model_name):
     results = cursor.fetchall()
     cursor.close()
     db_connection.close()
-    return results
+    
+    formatted_results = format_data(results)
+    return formatted_results
 
 def select_all():
     db_connection = sqlite3.connect('database.db')
@@ -90,7 +103,9 @@ def select_all():
     results = cursor.fetchall()
     cursor.close()
     db_connection.close()
-    return results
+    
+    formatted_results = format_data(results)
+    return formatted_results
 
 def select_color(color):
     db_connection = sqlite3.connect('database.db')
@@ -99,7 +114,9 @@ def select_color(color):
     results = cursor.fetchall()
     cursor.close()
     db_connection.close()
-    return results
+    
+    formatted_results = format_data(results)
+    return formatted_results
 
 # Registrar funções de seleção no servidor RPC
 server.register_function(select_company)
