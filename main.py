@@ -118,11 +118,35 @@ def select_color(color):
     formatted_results = format_data(results)
     return formatted_results
 
+def check_vin_exists(vin):
+    db_connection = sqlite3.connect('database.db')
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM car_data WHERE car_vin = ?", (vin,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    db_connection.close()
+    return count > 0
+
+def insert_vehicle(uid, vin, manufacturer, model, year, color):
+    db_connection = sqlite3.connect('database.db')
+    cursor = db_connection.cursor()
+    insert_query = "INSERT INTO car_data (uid, car_vin, car_company, car_model, car_model_year, car_color) VALUES (?, ?, ?, ?, ?, ?)"
+    values = (uid, vin, manufacturer, model, year, color)
+    cursor.execute(insert_query, values)
+    db_connection.commit()
+    cursor.close()
+    db_connection.close()
+    
+    return "Vehicle information has been successfully inserted into the database."
+
 # Registrar funções de seleção no servidor RPC
 server.register_function(select_company)
 server.register_function(select_model)
 server.register_function(select_all)
 server.register_function(select_color)
+server.register_function(check_vin_exists)
+server.register_function(insert_vehicle)
+
 
 def main():
     try:
